@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gnome-shell-extension-gravatar">
+  <schema id="org.gnome.shell.extensions.gravatar" path="/org/gnome/shell/extensions/mycroft@rahul.io/">
+    <key name="debug" type="b">
+      <default>false</default>
+      <summary>Debug Mode</summary>
+      <description>Enable debug mode.</description>
+    </key>
+    <key name="User" type="s">
+      <default>""</default>
+      <summary>User</summary>
+      <description>User's name.</description>
+    </key>
+  </schema>
+</schemalist>

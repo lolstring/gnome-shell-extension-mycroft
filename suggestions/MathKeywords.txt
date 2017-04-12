@@ -1,0 +1,12 @@
++
+-
+/
+*
+add
+subract
+multiply
+divide
+calculate
+pie
+square
+squareroot

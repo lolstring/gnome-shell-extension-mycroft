@@ -1,11 +1,8 @@
 
 /* eslint-env node */
 /* eslint-disable no-sync */
-'use strict';
-
 var gulp = require('gulp');
 var sass = sass = require('gulp-ruby-sass');
-
 
 
 var del = require('del');
@@ -66,7 +63,7 @@ gulp.task('lint', function () {
   var thresholdWarnings = 1;
   var thresholdErrors = 1;
   return gulp.src([ '**/*.js' ])
-    .pipe(eslint())
+    .pipe(eslint({quiet:true}))
     .pipe(eslint.format())
     .pipe(threshold.afterErrors(thresholdErrors, function (numberOfErrors) {
       throw new Error('ESLint errors (' + numberOfErrors + ') equal to or greater than the threshold (' + thresholdErrors + ')');
@@ -76,12 +73,13 @@ gulp.task('lint', function () {
     }));
 });
 
-gulp.task('sass', function() {
-  return gulp.src('sass/stylsheet.scss')
+gulp.task('sass', function () {
+  return gulp.src('sass/*.scss')
     .pipe(sass({
-      style: 'expanded'
+      style: 'expanded',
+      onError: console.error.bind(console, 'Sasserror'),
     }))
-    .pipe(gulp.dest('build'))
+    .pipe(gulp.dest('build'));
 });
 
 gulp.task('clean', function (cb) {
@@ -89,8 +87,20 @@ gulp.task('clean', function (cb) {
 });
 
 gulp.task('copy', function () {
-  return gulp.src([paths.src,'!src/sass/'])
+  return gulp.src(paths.src)
     .pipe(gulp.dest('build'));
+});
+gulp.task('copy-icons', function () {
+  return gulp.src('icons/*')
+  .pipe(gulp.dest('build/icons'));
+});
+gulp.task('copy-suggestions', function () {
+  return gulp.src('suggestions/*')
+  .pipe(gulp.dest('build/suggestions'));
+});
+gulp.task('copy-scripts', function () {
+  return gulp.src('shellscripts/*.sh')
+    .pipe(gulp.dest('build/shellscripts'));
 });
 
 gulp.task('copy-lib', function () {
@@ -124,8 +134,12 @@ gulp.task('build', function (cb) {
       'metadata',
       'schemas',
       'copy',
+      'copy-scripts',
+      'copy-icons',
+      'copy-suggestions',
       'copy-lib',
       'copy-license',
+      'sass',
     ],
     cb
   );
@@ -134,10 +148,13 @@ gulp.task('build', function (cb) {
 gulp.task('watch', [ 'build' ], function () {
   gulp.watch(paths.src, [ 'copy' ]);
   gulp.watch(paths.lib, [ 'copy-lib' ]);
+  gulp.watch('shellscripts/*.sh', [ 'copy-scripts' ]);
+  gulp.watch('icons/*', [ 'copy-icons' ]);
+  gulp.watch('suggestions/*', [ 'copy-suggestions' ]);
   gulp.watch(paths.metadata, [ 'metadata' ]);
   gulp.watch(paths.schemas, [ 'schemas' ]);
+  gulp.watch('sass/*.scss', [ 'sass' ]);
 });
-
 gulp.task('reset-prefs', shell.task([
   'dconf reset -f /org/gnome/shell/extensions/mycroft/',
 ]));
@@ -187,8 +204,8 @@ gulp.task('push', function (cb) {
   return cb();
 });
 
-gulp.task('dist', [ 'lint' ], function (cb) {
-  runSequence('build', function () {
+gulp.task('dist', function (cb) {
+  runSequence('build', ['lint'], function () {
     var zipFile = metadata.uuid + '-' + getVersion(true) + '.zip';
     var stream = gulp.src([ 'build/**/*' ])
       .pipe(zip(zipFile))
@@ -209,11 +226,11 @@ gulp.task('release', [ 'lint' ], function (cb) {
 });
 
 gulp.task('enable-debug', shell.task([
-  'dconf write /org/gnome/shell/extensions/gravatar/debug true',
+  'dconf write /org/gnome/shell/extensions/mycroft/debug true',
 ]));
 
 gulp.task('disable-debug', shell.task([
-  'dconf write /org/gnome/shell/extensions/gravatar/debug false',
+  'dconf write /org/gnome/shell/extensions/mycroft/debug false',
 ]));
 
 gulp.task('test', function (cb) {

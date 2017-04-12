@@ -1,0 +1,4 @@
+open 
+lockscreen
+shutdown
+switch

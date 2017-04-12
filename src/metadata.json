@@ -1,9 +1,15 @@
 {
-	"version": 0.01,
-	"name" : "MycroftAI",
+	"version": "0.01",
+	"name": "Mycroft Assistant",
 	"settings-schema": "org.gnome.shell.extensions.mycroft",
-	"shell-version": ["3.20.4"],
+  	"shell-version": [
+    		"3.14", 
+   		"3.16", 
+    		"3.18", 
+    		"3.20", 
+    		"3.22", 
+    		"3.24"
+  	], 
 	"uuid": "mycroft@rahul.io",
-	"name": "MycroftAI",
-	"description": "Add MycroftAI to gnome as a shell extension"
+	"description": "Mycroft Assistant UI for your gnome-shell"
 }

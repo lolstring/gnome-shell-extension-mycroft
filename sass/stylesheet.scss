@@ -1,3 +1,252 @@
-.abc {
-padding-left: 20px;
+$icon_color: #0d0d0d;
+$icon_color_active: #5c5c5c; 
+$browser-context: 11;
+
+@function em($pixels, $context: $browser-context) {
+    @if unitless($pixels) {
+        $pixels: $pixels * 1px;
+    }
+
+    @if unitless($context) {
+        $context: $context * 1px;
+    }
+
+    @return $pixels / $context * 1em;
+}
+
+
+
+.main-window{
+	padding:0em 0em;
+	spacing:0;
+	//margin:0;
+	//width:36.364em;
+	//background-color: rgba(10,200,100,1);
+}
+.xyz{
+	background-color:#fff;
+}
+#menuBar{
+	spacing:0px;
+	background-color: rgba(30,200,10,1);
+}
+
+.popup-menu-custom .popup-menu-content-custom {
+    padding: 0em 0em; 
+
+} 
+
+.main-window .popup-menu-ornament {
+//height:0em;
+width: 0em;
+//padding:0em;
+//spacing:0;
+//display:none;
+}
+//MAIN BACKGROUND COLOR
+//HACKY
+.boxy{
+	//-arrow-background-color: rgba(20, 20, 20,1);
+	-arrow-background-color: rgba(255, 255, 255,0.85);
+}
+//buttons
+//
+@keyframes example {
+    from {background-color: red;}
+    to {background-color: yellow;}
+}
+
+
+.menu-button{
+	width:1.36em;
+	height:1.36em;
+	border-bottom:0.273em solid transparent;
+	padding:0.2em 0.7em 0.2em 0.7em;
+	background: transparent;
+	color: $icon_color;
+	transition-duration: 1200ms;
+
+&:hover{
+	color: $icon_color_active;
+	border-top-color:#3daefd;
+	border-bottom-color:transparent;
+}
+
+&:active{
+	//color: #151515;
+	//background-color:#323232;
+	color: $icon_color_active;
+	border-top-color:#3daefd;
+	border-bottom-color:transparent;
+	}
+}
+.mycroft-status-text{
+	width:18.364em;
+	padding:0;
+	margin:0em;
+	//color:#f00;
+	text-align: center;
+	position: fixed;
+	//top:2%; right:2%;
+	font-size:0.909em;
+}
+.mycroft-status-text {color:#000000;}
+
+.disabled{
+	color:#d08543;
+}
+.active{
+	color:#228e22;
+}
+.failed, .install{
+	color:#B33A3A;
+}
+.starting{
+	color:#9f49f9;
+}
+.stopping{
+	color:#f9499f;
+}
+.listening{
+	color:#25df25;
+}
+.chat-box{
+	height:em(150);
+	//width:18.364em;
+}
+.service_icon:hover{
+	background:blue;
+}
+.search-box-label{
+	margin:em(20), em(10);
+	font-size:0.909em;
+}
+.hint-header{
+	margin:0.75em,1em;
+	font-weight:bold;
+	color:rgba(175,175,175,1);
+	font-size:0.909em;
+}
+.hint-text{
+	margin:0.25em, 0em, 0.25em 0em;
+	//font-weight:normal;
+	color:rgba(225,225,225,1);
+	font-size:0.909em;
+}
+.hint-text-bold{
+	margin:0.25em 0em 0.25em 1.5em;
+	color:rgba(150,150,150,1);
+}
+.hint-box{
+	margin:2em 2em;
+	max-width: em(280);
+}
+.menuBarLeft{
+	margin:0;
+	padding:0;
+}
+.menuBar{
+	//position:fixed;
+	//left:0;
+	//top:0;
+	margin:0;
+	padding:0.5em 0.2em 0.2em 0.2em;
+}
+#messageBox{
+	padding: em(6) em(4);
+}
+.utterance-entry {
+  width: em(280);
+  padding: em(2) em(4);
+  border-radius: em(2);
+  border-color: #747467;
+  color: #eeeeec;
+  background-color: #2e3436; 
+&:focus {
+    //padding: 6px 8px;
+    border-width: em(1);
+    border-color: #215d9c; 
+}
+}
+.utterance-entry .utterance-entry-icon,.utterance-mic-icon {
+    icon-size: 1.2em;
+    padding: 0 0;
+    color: rgba(238, 238, 236, 0.7); 
+}
+.utterance-entry:hover .utterance-entry-icon, .utterance-entry:focus .utterance-entry-icon {
+    color: #eeeeec; 
+}
+.utterance-mic-icon:hover, .utterance-mic-icon:focus{
+	color: #eeeeec;
+}
+.suggestions-box{
+	margin:em(2) em(0);
+	//background-color:#fff00f;
+}
+.suggestions-label{
+	border-color: #ffffff;
+	border-radius: em(2);
+	padding:em(2) em(4);
+	margin:em(2) em(2);
+	background-color:#2e3436;
+	max-width:7em;
+	word-wrap:ellipsis;
+}
+.suggestions-label:focus , .suggestions-label:hover, .suggestion-label:active{
+	background-color:#0c1214;
+	word-wrap:none;
+}
+.suggestions-focus-label-active{
+	//background-color:#0c1214;
+	border-color: #ffffff;
+	border-radius: em(2);
+	background-color:#2e3436;
+	padding:em(2) em(4);
+	max-width:24em;
+}
+.suggestions-focus-label{
+	padding:em(2) em(4) !important;
+	border-color: #ffffff;
+	border-radius: em(2);
+	//min-height:2em;
+	//min-width:2em;
+}
+.clear-button{
+	//border-color:#ffffff;
+	border-radius:em(8);
+	//border-width:em(1);
+	font-size:em(8);
+	background-color:rgba(175,175,175,0.1);
+}
+.conversation-box {
+	height:6em;
+	max-width:24em;
+	padding:1em;
+	word-wrap: break-word;
+}
+.verticalfade{
+	-st-vfade-offset: em(30);
+}
+.conversation-label{
+	color:white;
+	border-radius: em(2);
+	border-color:rgba(225,255,255,0.1);
+	background-color:rgba(200,200,200,0.1);
+	border-width:em(1);
+	padding:em(2) em(4);
+	margin:em(4) em(0);
+}
+.sent-label{
+	border-radius:em(2) em(8);
+	margin-left:4em;
+
+}
+.reciever-label{
+	//background-color:rgba(125,125,0,0.6);
+	border-radius:em(8) em(2);
+	margin-right:4em;
+}
+.display-box{
+	height:em(220);
+	width:em(280);
 }

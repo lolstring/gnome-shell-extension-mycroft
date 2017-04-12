@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist gettext-domain="gnome-shell-extension-gravatar">
-  <schema id="org.gnome.shell.extensions.gravatar" path="/org/gnome/shell/extensions/mycroft@rahul.io/">
+<schemalist gettext-domain="gnome-shell-extension-mycroft">
+  <enum id="org.gnome.shell.extensions.mycroft.position">
+    <value value="0" nick="center"/>
+    <value value="1" nick="right"/>
+    <value value="2" nick="left"/>
+  </enum>
+  <schema id="org.gnome.shell.extensions.mycroft" path="/org/gnome/shell/extensions/mycroft@rahul.io/">
+  
     <key name="debug" type="b">
       <default>false</default>
       <summary>Debug Mode</summary>
       <description>Enable debug mode.</description>
     </key>
-    <key name="User" type="s">
-      <default>""</default>
-      <summary>User</summary>
-      <description>User's name.</description>
+
+    <key name="position-in-panel" enum="org.gnome.shell.extensions.mycroft.position">
+      <default>'center'</default>
+      <summary>Position in Panel</summary>
+    </key>
+    <key type="s" name="mycroft-core-location">
+      <default>"/home/$USER/Mycroft-core"</default>
+      <summary>Mycroft Core Location</summary>
+    </key>
+
+    <key type="b" name="mycroft-is-install">
+      <default>true</default>
+      <summary>Is Mycroft Installed</summary>
+    </key>
+    <key type="s" name="mycroft-install-type">
+      <default>'3'</default>
+      <summary>Mycroft Install Type</summary>
     </key>
   </schema>
 </schemalist>

@@ -20,5 +20,5 @@ This is a gnome-shell-extension for [Mycroft](https://mycroft.ai) AI Assistant.
  * [Known Player Bugs](https://github.com/lolstring/gnome-shell-extension-mycroft/wiki/Known-Player-Bugs)
 
 # Author
-* Rahul Mehra [Website](https://rahul.io)
-* Aditya Mehra [Website](http://aiix.tk)
+* Rahul Mehra [[Web](https://rahul.io)] [[E-mail](mailto:rahulmehra@techgeek.co.in)]
+* Aditya Mehra [[Web](http://aiix.tk)] [[E-mail](mailto:aix.m@outlook.com)]

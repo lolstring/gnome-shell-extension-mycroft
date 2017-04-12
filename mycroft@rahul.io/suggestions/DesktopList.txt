@@ -1,0 +1,9 @@
+open firefox
+open terminal
+open konsole
+open dolphin
+open youtube
+open vlc
+open kwrite
+view recent files
+lock this computer

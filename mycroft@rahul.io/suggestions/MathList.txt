@@ -1,0 +1,5 @@
+Calculate 2+2
+Calculate 1/4 * (4 - 1/2)
+pi to 10 digits
+219 to binary
+Calculate e^z

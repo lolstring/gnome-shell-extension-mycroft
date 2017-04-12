@@ -112,7 +112,9 @@ gulp.task('copy-license', function () {
   return gulp.src([ 'LICENSE' ])
     .pipe(gulp.dest('build'));
 });
-
+gulp.task('copy-release',function(){
+  return gulp.src('build/**/*').pipe(gulp.dest(metadata.uuid));
+});
 gulp.task('metadata', function () {
   return gulp.src(paths.metadata)
     .pipe(jsonEditor(function (json) {
@@ -205,8 +207,8 @@ gulp.task('push', function (cb) {
 });
 
 gulp.task('dist', function (cb) {
-  runSequence('build', ['lint'], function () {
-    var zipFile = metadata.uuid + '-' + getVersion(true) + '.zip';
+  runSequence('build','copy-release', ['lint'], function () {
+    var zipFile = metadata.uuid + '.zip';
     var stream = gulp.src([ 'build/**/*' ])
       .pipe(zip(zipFile))
       .pipe(gulp.dest('dist'));
@@ -239,7 +241,6 @@ gulp.task('test', function (cb) {
     cb
   );
 });
-
 gulp.task('default', function () {
   /* eslint-disable no-console, max-len */
   console.log(

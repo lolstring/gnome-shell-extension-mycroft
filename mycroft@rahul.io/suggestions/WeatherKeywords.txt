@@ -1,0 +1,7 @@
+weather
+rain
+forecast
+forecasted
+climate
+snow
+storm

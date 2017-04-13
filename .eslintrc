@@ -87,7 +87,7 @@
     "wrap-iife": [2, "inside"],
     "yoda": [2, "never"],
 
-    "strict": [1, "global"],
+    "strict": [0, "global"],
 
     "init-declarations": 0,
     "no-catch-shadow": 0,
@@ -121,7 +121,7 @@
     "func-names": 0,
     "func-style": [2, "declaration"],
     "id-length": 0,
-    "indent": [1, 2],
+    "indent": [1, "tab"],
     "key-spacing": [1, {"beforeColon": false, "afterColon": true}],
     "keyword-spacing": 1,
     "lines-around-comment": 0,

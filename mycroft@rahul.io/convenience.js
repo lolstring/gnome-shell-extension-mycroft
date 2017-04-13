@@ -41,10 +41,10 @@ function initTranslations(domain) {
 
   domain = domain || extension.metadata['gettext-domain'];
 
-    // check if this extension was built with "make zip-file", and thus
-    // has the locale files in a subfolder
-    // otherwise assume that extension has been installed in the
-    // same prefix as gnome-shell
+  // check if this extension was built with "make zip-file", and thus
+  // has the locale files in a subfolder
+  // otherwise assume that extension has been installed in the
+  // same prefix as gnome-shell
   let localeDir = extension.dir.get_child('locale');
   if (localeDir.query_exists(null)) {
     Gettext.bindtextdomain(domain, localeDir.get_path());
@@ -68,17 +68,17 @@ function getSettings(schema) {
 
   const GioSSS = Gio.SettingsSchemaSource;
 
-    // check if this extension was built with "make zip-file", and thus
-    // has the schema files in a subfolder
-    // otherwise assume that extension has been installed in the
-    // same prefix as gnome-shell (and therefore schemas are available
-    // in the standard folders)
+  // check if this extension was built with "make zip-file", and thus
+  // has the schema files in a subfolder
+  // otherwise assume that extension has been installed in the
+  // same prefix as gnome-shell (and therefore schemas are available
+  // in the standard folders)
   let schemaDir = extension.dir.get_child('schemas');
   let schemaSource;
   if (schemaDir.query_exists(null)) {
     schemaSource = GioSSS.new_from_directory(schemaDir.get_path(),
-            GioSSS.get_default(),
-            false);
+      GioSSS.get_default(),
+      false);
   } else {
     schemaSource = GioSSS.get_default();
   }

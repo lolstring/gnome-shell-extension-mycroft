@@ -34,16 +34,16 @@ const MycroftPrefsWidget = new GObject.Class({
   Name: 'MycroftExtension.Prefs.Widget',
   GTypeName: 'MycroftExtensionPrefsWidget',
   Extends: Gtk.Box,
-  _init: function (params) {
+  _init: function(params) {
     this.parent(params);
 
-		// Create user-agent string from uuid and (if present) the version
+    // Create user-agent string from uuid and (if present) the version
     this.user_agent = Me.metadata.uuid;
     if (Me.metadata.version !== undefined && Me.metadata.version.toString().trim() !== '') {
       this.user_agent += '/';
       this.user_agent += Me.metadata.version.toString();
     }
-		// add trailing space, so libsoup adds its own user-agent
+    // add trailing space, so libsoup adds its own user-agent
     this.user_agent += ' ';
 
     this.initWindow();
@@ -53,7 +53,7 @@ const MycroftPrefsWidget = new GObject.Class({
 
   Window: new Gtk.Builder(),
 
-  initWindow: function () {
+  initWindow: function() {
     this.Window.add_from_file(EXTENSIONDIR + '/mycroft-settings.ui');
     this.mainWidget = this.Window.get_object('mycroft-pref');
     this.isInstalled = this.Window.get_object('isInstalled');
@@ -82,40 +82,40 @@ const MycroftPrefsWidget = new GObject.Class({
         } else if (theObjects[i].class_path()[1].indexOf('GtkFileChooser') != -1) {
           this.initFileChooser(theObjects[i]);
         }
-        this.configWidgets.push([ theObjects[i], name ]);
+        this.configWidgets.push([theObjects[i], name]);
       }
     }
-    this.installType.connect('changed', Lang.bind(this, function () {
+    this.installType.connect('changed', Lang.bind(this, function() {
       this.setMycroftCore(true);
     }));
-    this.installType.connect('draw', Lang.bind(this, function () {
+    this.installType.connect('draw', Lang.bind(this, function() {
       this.setMycroftCore();
     }));
-    this.buttonInstall.connect('clicked', Lang.bind(this, function () {
+    this.buttonInstall.connect('clicked', Lang.bind(this, function() {
       this.isInstalled.show();
     }));
-    this.buttonInstallYes.connect('clicked', Lang.bind(this, function () {
+    this.buttonInstallYes.connect('clicked', Lang.bind(this, function() {
       //this.openUrl();
-			this.runScript();
+      this.runScript();
       this.isInstalled.hide();
     }));
-    this.buttonInstallNo.connect('clicked', Lang.bind(this, function () {
+    this.buttonInstallNo.connect('clicked', Lang.bind(this, function() {
       this.isInstalled.hide();
     }));
     this.currentFolder;
-    this.selectFolderOk.connect('clicked', Lang.bind(this, function () {
+    this.selectFolderOk.connect('clicked', Lang.bind(this, function() {
       this.setCoreFolder(this.selectFolderWidget.get_current_folder());
       this.selectFolderWidget.close();
     }));
-    this.selectFolderCancel.connect('clicked', Lang.bind(this, function () {
+    this.selectFolderCancel.connect('clicked', Lang.bind(this, function() {
       this.selectFolderWidget.close();
     }));
-    this.buttonFileChooser.connect('button-press-event', Lang.bind(this, function () {
+    this.buttonFileChooser.connect('button-press-event', Lang.bind(this, function() {
       this.selectFolderWidget.set_current_folder(MYCROFT_CORE_LOCATION_KEY);
       this.buttonFileChooser.set_current_folder(this.currentFolder);
     }));
   },
-  openUrl: function () {
+  openUrl: function() {
     var a = new GLib.TimeVal();
     let o = GLib.get_current_time(a);
     let url = 'https://github.com/MycroftAI/mycroft-core/';
@@ -126,94 +126,79 @@ const MycroftPrefsWidget = new GObject.Class({
       log(err.message);
     }
   },
-  runScript: function () {
+  runScript: function() {
     var e;
     try {
-      let [ res, out ] = GLib.spawn_command_line_async('gnome-terminal -e ' + EXTENSIONDIR + '/shellscripts/packageInstall.sh');
+      let [res, out] = GLib.spawn_command_line_async('gnome-terminal -e ' + EXTENSIONDIR + '/shellscripts/packageInstall.sh');
     } catch (e) {
       throw e;
     }
   },
-  setCoreFolder: function (v) {
+  setCoreFolder: function(v) {
     this.currentFolder = v;
     this.selectFolderWidget.set_current_folder(this.currentFolder);
     this.buttonFileChooser.set_current_folder(this.currentFolder);
     this.core_location = this.currentFolder;
   },
-  getCoreFolder: function () {
+  getCoreFolder: function() {
     return location();
   },
 
-  loadConfig: function () {
+  loadConfig: function() {
     this.Settings = Convenience.getSettings(MYCROFT_SETTINGS_SCHEMA);
-    this.Settings.connect('changed', Lang.bind(this, function () {
+    this.Settings.connect('changed', Lang.bind(this, function() {
       this.refreshUI();
     }));
   },
-  setMycroftCore: function (fl) {
+  setMycroftCore: function(fl) {
     if (fl) {
       this.mycroft_install_type = this.installType.get_active_id();
     }
     switch (this.mycroft_install_type) {
-    case '0':
-    case '2':
-      this.mycroft_is_install = true;
-      this.labelInstall.hide();
-      this.buttonInstall.hide();
-      this.buttonFileChooser.show();
-      this.labelLocation.show();
-      break;
-    case '1':
-      if (fl) {
-        this.mycroft_install_location = '/etc/mycroft';
-      }
-      this.mycroft_is_install = true;
-      this.labelInstall.hide();
-      this.buttonInstall.hide();
-      this.buttonFileChooser.hide();
-      this.labelLocation.hide();
-      break;
-    case '3':
-      this.mycroft_is_install = false;
-      this.labelInstall.show();
-      this.buttonInstall.show();
-      this.buttonFileChooser.hide();
-      this.labelLocation.hide();
-      break;
-    default:
-      //donothing
+      case '0':
+      case '2':
+        this.mycroft_is_install = true;
+        this.labelInstall.hide();
+        this.buttonInstall.hide();
+        this.buttonFileChooser.show();
+        this.labelLocation.show();
+        break;
+      case '1':
+        if (fl) {
+          this.mycroft_install_location = '/etc/mycroft';
+        }
+        this.mycroft_is_install = true;
+        this.labelInstall.hide();
+        this.buttonInstall.hide();
+        this.buttonFileChooser.hide();
+        this.labelLocation.hide();
+        break;
+      case '3':
+        this.mycroft_is_install = false;
+        this.labelInstall.show();
+        this.buttonInstall.show();
+        this.buttonFileChooser.hide();
+        this.labelLocation.hide();
+        break;
+      default:
+        //donothing
     }
   },
-  initFileChooser: function (theFileChooser) {
+  initFileChooser: function(theFileChooser) {
     let name = theFileChooser.get_name();
-    theFileChooser.connect('changed', Lang.bind(this, function () {
+    theFileChooser.connect('changed', Lang.bind(this, function() {
       this[name] = this.set_current_folder('/home/$USER/Mycroft-core');
     }));
   },
 
-  initComboBox: function (theComboBox) {
+  initComboBox: function(theComboBox) {
     let name = theComboBox.get_name();
-    theComboBox.connect('changed', Lang.bind(this, function () {
+    theComboBox.connect('changed', Lang.bind(this, function() {
       this[name] = arguments[0].active;
     }));
   },
 
-	// initScale: function(theScale) {
-	// 	let name = theScale.get_name();
-	// 	theScale.set_value(this[name]);
-	// 	this[name + 'Timeout'] = undefined;
-	// 	theScale.connect("value-changed", Lang.bind(this, function(slider) {
-	// 		if (this[name + 'Timeout'] !== undefined)
-	// 			Mainloop.source_remove(this[name + 'Timeout']);
-	// 		this[name + 'Timeout'] = Mainloop.timeout_add(250, Lang.bind(this, function() {
-	// 			this[name] = slider.get_value();
-	// 			return false;
-	// 		}));
-	// 	}));
-
-	// },
-
-  refreshUI: function () {
+  refreshUI: function() {
     this.mainWidget = this.Window.get_object('mycroft-pref');
     let config = this.configWidgets;
     for (let i in config) {
@@ -238,18 +223,6 @@ const MycroftPrefsWidget = new GObject.Class({
     }
     this.Settings.set_enum(MYCROFT_POSITION_IN_PANEL_KEY, v);
   },
-
-	// get menu_alignment() {
-	// 	if (!this.Settings)
-	// 		this.loadConfig();
-	// 	return this.Settings.get_double(MYCROFT_MENU_ALIGNMENT_KEY);
-	// },
-
-	// set menu_alignment(v) {
-	// 	if (!this.Settings)
-	// 		this.loadConfig();
-	// 	return this.Settings.set_double(MYCROFT_MENU_ALIGNMENT_KEY, v);
-	// },
   get core_location() {
     if (!this.Settings) {
       this.loadConfig();
@@ -262,17 +235,6 @@ const MycroftPrefsWidget = new GObject.Class({
     }
     return this.Settings.set_string(MYCROFT_CORE_LOCATION_KEY, v);
   },
-	// get pressure_unit() {
-	// 	if (!this.Settings)
-	// 		this.loadConfig();
-	// 	return this.Settings.get_enum(MYCROFT_PRESSURE_UNIT_KEY);
-	// },
-
-	// set pressure_unit(v) {
-	// 	if (!this.Settings)
-	// 		this.loadConfig();
-	// 	this.Settings.set_enum(OPENWEATHER_PRESSURE_UNIT_KEY, v);
-	// }
   get mycroft_install_type() {
     if (!this.Settings) {
       this.loadConfig();
@@ -299,32 +261,6 @@ const MycroftPrefsWidget = new GObject.Class({
   },
 
 });
-// var mycRunner = {
-// 	_spawn_async: function ( cmd, e ) {
-// 		try {
-//             GLib.spawn_command_line_async( cmd, e );
-//         } catch ( e ) {
-//             throw e;
-//           }
-//  	    },
-
-// 	start : function () {
-// 	        this._spawn_async(mycConfig.start, null);
-// 	    },
-
-// 	install : function () {
-// 		this._spawn_async(mycConfig.install, null);
-// 	    },
-
-// 	connect : function () {
-// 		this._spawn_async(mycConfig.connect, null);
-// 	    },
-
-//    	stop : function() {
-//    	     this._spawn_async(mycConfig.stop, null);
-//     	    }
-
-// 	};
 
 function init() {
   Convenience.initTranslations('gnome-shell-extension-mycroft');

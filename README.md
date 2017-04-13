@@ -42,4 +42,4 @@ Inspired and learnt gjs from the following
 
 * [Openweather by jenslody](https://extensions.gnome.org/extension/750/openweather/)
 * [Sound Input & Output Device Chooser by kgshank](https://extensions.gnome.org/extension/906/sound-output-device-chooser/) (Gvc) 
-* [Mathimatical Coffee](https://extensions.gnome.org/accounts/profile/mathematical.coffee)
+* [Mathematical Coffee](https://extensions.gnome.org/accounts/profile/mathematical.coffee)

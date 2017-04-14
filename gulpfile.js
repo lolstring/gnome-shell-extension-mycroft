@@ -83,7 +83,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('clean', function (cb) {
-  return del([ 'build/' ], cb);
+  return del([ 'build/',metadata.uuid], cb);
 });
 
 gulp.task('copy', function () {
@@ -101,11 +101,6 @@ gulp.task('copy-suggestions', function () {
 gulp.task('copy-scripts', function () {
   return gulp.src('shellscripts/*.sh')
     .pipe(gulp.dest('build/shellscripts'));
-});
-
-gulp.task('copy-lib', function () {
-  return gulp.src(paths.lib)
-    .pipe(gulp.dest('build/lib'));
 });
 
 gulp.task('copy-license', function () {
@@ -139,7 +134,6 @@ gulp.task('build', function (cb) {
       'copy-scripts',
       'copy-icons',
       'copy-suggestions',
-      'copy-lib',
       'copy-license',
       'sass',
     ],

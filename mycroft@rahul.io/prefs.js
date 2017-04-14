@@ -37,15 +37,6 @@ const MycroftPrefsWidget = new GObject.Class({
   _init: function(params) {
     this.parent(params);
 
-    // Create user-agent string from uuid and (if present) the version
-    this.user_agent = Me.metadata.uuid;
-    if (Me.metadata.version !== undefined && Me.metadata.version.toString().trim() !== '') {
-      this.user_agent += '/';
-      this.user_agent += Me.metadata.version.toString();
-    }
-    // add trailing space, so libsoup adds its own user-agent
-    this.user_agent += ' ';
-
     this.initWindow();
 
     this.refreshUI();
@@ -199,7 +190,6 @@ const MycroftPrefsWidget = new GObject.Class({
   },
 
   refreshUI: function() {
-    this.mainWidget = this.Window.get_object('mycroft-pref');
     let config = this.configWidgets;
     for (let i in config) {
       if (config[i][0].active != this[config[i][1]]) {
@@ -271,13 +261,4 @@ function buildPrefsWidget() {
   let widget = prefs.mainWidget;
   widget.show_all();
   return widget;
-}
-
-function printAllProperties(obj) {
-  var propValue;
-  for (var propName in obj) {
-    propValue = obj[propName];
-
-    log(propName, propValue);
-  }
 }

@@ -103,7 +103,7 @@ const MycroftServiceManager = new Lang.Class({
 					}
 				}));
 			} else {
-				log('Locked');
+				//Locked
 			}
 		}));
 		this.sendMessageId = this.connect('send-message', Lang.bind(this, function(uploader, message) {
@@ -122,31 +122,27 @@ const MycroftServiceManager = new Lang.Class({
 					_timeoutId = Mainloop.timeout_add(5000, Lang.bind(this, function() {
 						this.getServiceStatus(Lang.bind(this, function(status) {
 							if (status === 'active') {
-								// this.emitServiceStatus('starting');
 								_timeoutId = Mainloop.timeout_add(5000, Lang.bind(this, function() {
 									this.initWS();
-									// Mainloop.quit();
 								}));
 							}
 						}));
 						_timeoutId = 0;
 					}));
 				} catch (e) {
-					log(e);
+					log('Mycroft UI - Start Service' + e);
 				}
 			}
 		}));
 	},
 	stopService: function(callback) {
 		this.emitServiceStatus('stopping');
-		// this.emitServiceStopping();
 		try {
 			GLib.spawn_command_line_async(core_location + '/mycroft.sh stop');
-			// socketClient.abort();
 			this.closeSocket();
 			this.wsStarted = false;
 		} catch (e) {
-			log(e);
+			log('Mycroft UI - Stop Service' + e);
 		}
 		this.emitServiceStatus('disabled');
 	},
@@ -172,7 +168,7 @@ const MycroftServiceManager = new Lang.Class({
 					callback('disabled');
 				}
 			} catch (err) {
-				log(err);
+				log('Mycroft UI - Get Service Status' + err);
 			}
 		} else {
 			this.emitServiceStatus('install');
@@ -222,18 +218,16 @@ const MycroftServiceManager = new Lang.Class({
 					}
 				}));
 			} catch (e) {
-				log(e);
+				log('Mycroft UI - Init Websocket' + e);
 			}
 		}
 		this.locked = false;
 	},
 	onMessage: function(connection, type, message) {
 		let data = JSON.parse(message.get_data());
-		// log(data.data);
 
 		if (data.type === 'connected') {
 			this.emitServiceStatus('active'); // Active();
-			// this.myUi.topMenuBar.emit('mycroft-status-active');
 		} else if (data.type === 'speak') {
 			this.emit('message-recieved', data.data.utterance, 'mycroft');
 		} else if (data.type === 'recognizer_loop:audio_output_start') {
@@ -241,7 +235,7 @@ const MycroftServiceManager = new Lang.Class({
 		} else if (data.type === 'recognizer_loop:audio_output_end') {
 			this.emitAnimationStatus('audio_output_stop');
 		} else if (data.type === 'enclosure.weather.display') {
-			log('show Weather Panel');
+			//log('show Weather Panel');
 		} else if (data.type === 'configuration.updated') {
 			this.wsStarted = true;
 		} else if (data.type === 'recognizer_loop:record_begin') {
@@ -283,7 +277,7 @@ const MycroftServiceManager = new Lang.Class({
 		// socketClient.abort();
 	},
 	onError: function(connection, error) {
-		log('Connection Error : ' + error);
+		log('Mycroft UI - Connection Error : ' + error);
 	},
 	sendMessage: function(val) {
 		if (this.wsStarted) {
@@ -294,10 +288,10 @@ const MycroftServiceManager = new Lang.Class({
 			try {
 				this.connection.send_text(JSON.stringify(socketmessage));
 			} catch (e) {
-				log(e);
+				log('Mycroft UI - Send Message: ' + e);
 			}
 		} else {
-			log('noWebSocket');
+			log('Mycroft UI - No web socket');
 		}
 	},
 	closeSocket: function() {
@@ -309,7 +303,7 @@ const MycroftServiceManager = new Lang.Class({
 				socketClient.abort();
 			}
 		} catch (e) {
-			log('closeSocket: ' + e);
+			log('Mycroft UI - Close Socket: ' + e);
 		}
 	},
 	emitServiceStatus: function(status, arg) {
@@ -353,7 +347,7 @@ const MycroftServiceManager = new Lang.Class({
 			this._settings.disconnect(this._settingsC);
 		}
 		this._settingsC = this._settings.connect('changed', Lang.bind(this, function() {
-			position_in_panel = this.position_in_panel;
+			position_in_panel = this._position_in_panel;
 			core_location = this.core_location;
 			let mycroft_is_install_change = this.mycroft_is_install;
 			this.emit('settings-changed');
@@ -409,8 +403,8 @@ const MycroftUI = new Lang.Class({
 	},
 	setEventListeners: function() {
 		// Service Status Connect
-		this.mycroftServiceSettingsChangedId = this.mycroftService.connect('settings-changed', Lang.bind(this, function(uploader, status) {
-			this.mycroftPanel.checkPositionInPanel();
+		this.mycroftServiceSettingsChangedId = this.mycroftService.connect('settings-changed', Lang.bind(this.mycroftPanel, function(uploader, status) {
+			this.checkPositionInPanel();
 		}));
 
 		this.mycroftServiceStatusId = this.mycroftService.connect('mycroft-status', Lang.bind(this, this.updateStatus));
@@ -440,7 +434,6 @@ const MycroftUI = new Lang.Class({
 	},
 	destroy: function() {
 		this.destroySignals();
-		//this.mycroftPanel.removePanelIcon();
 		this.myUi.destroy();
 		this.myUi = null;
 		this.mycroftService.destroy();
@@ -523,7 +516,6 @@ const MycroftPanelButton = new Lang.Class({
 		this.actor.reparent(dummyBox);
 		dummyBox.remove_actor(this.actor);
 		dummyBox.destroy();
-
 		let children = null,
 			childrenL = 0;
 		switch (this._position_in_panel) {
@@ -550,9 +542,10 @@ const MycroftPanelButton = new Lang.Class({
 		} else {
 			Main.panel._menu.addMenu(this.menu);
 		}
+		this.a = 10;
 	},
 	checkPositionInPanel: function() {
-		if (this._old_position_in_panel !== this._position_in_panel) {
+		if (this._old_position_in_panel !== position_in_panel) {
 			switch (this._old_position_in_panel) {
 				case MycroftPosition.LEFT:
 					Main.panel._leftBox.remove_actor(this.actor);
@@ -566,10 +559,9 @@ const MycroftPanelButton = new Lang.Class({
 				default:
 					// do nothing
 			}
-
 			let children = null,
 				childrenL = 0;
-			switch (this._position_in_panel) {
+			switch (position_in_panel) {
 				case MycroftPosition.LEFT:
 					children = Main.panel._leftBox.get_children();
 					childrenL = children.length > 0 ? children.length : 0;
@@ -587,7 +579,7 @@ const MycroftPanelButton = new Lang.Class({
 				default:
 					// do nothing
 			}
-			this._old_position_in_panel = this._position_in_panel;
+			this._old_position_in_panel = position_in_panel;
 		}
 	},
 	updatePanelIcon: function(status) {
@@ -627,7 +619,6 @@ const MycroftPopup = new Lang.Class({
 		});
 		this.mainBox = new St.BoxLayout({
 			name: 'main-box',
-			style_class: 'main-box',
 			vertical: true,
 		});
 
@@ -996,7 +987,6 @@ const ChatBox = new Lang.Class({
 		this.messageBox = new St.BoxLayout({
 			name: 'messageBox',
 			style_class: 'message-box',
-			// y_align: St.Align.END,
 			x_align: Clutter.ActorAlign.CENTER,
 			vertical: true,
 		});
@@ -1010,7 +1000,7 @@ const ChatBox = new Lang.Class({
 
 		this._entry = new St.Entry({
 			style_class: 'utterance-entry',
-			hint_text: 'Type to search…',
+			hint_text: 'Type to search...',
 			track_hover: true,
 			can_focus: true,
 		});
@@ -1584,8 +1574,6 @@ const SuggestionsBox = new Lang.Class({
 
 		if (suggestion.length < 1) {
 			let wordListArray = this.wordListArray;
-			// let stack = ['aba', 'abcd', 'ab', 'da', 'da', undefined, , false, null, 0];
-			// let prefixTextToFind = "a"; //b, c or d
 
 			suggestion = wordListArray.filter(function(stackValue) {
 				// get rid of all falsely objects
@@ -1611,21 +1599,17 @@ const SuggestionsBox = new Lang.Class({
 	},
 	readFile: function(filename) {
 		if (GLib.file_test(filename, GLib.FileTest.EXISTS)) {
-			// log('exists');
 			let file = Gio.file_new_for_path(filename);
 			try {
 				let [ok, contents, tag] = file.load_contents(null);
 				return contents;
 			} catch (e) {
-				log(e);
+				log('Mycroft UI - Read File' + e);
 				return 0;
 			}
 		} else {
 			return 0;
 		}
-	},
-	suggestFromFile: function() {
-
 	},
 	_suggestionsRandom: function() {
 		let randomFile, randomText = [];
@@ -1633,12 +1617,6 @@ const SuggestionsBox = new Lang.Class({
 			randomFile = this.files[Math.floor(this.files.length * Math.random())].listFile;
 			randomText[i] = randomFile[Math.floor(randomFile.length * Math.random())];
 		}
-		// random = this.files[Math.floor(this.files.length*Math.random())].listFile;
-		// this.suggestFirstLabel.set_text(random[Math.floor(random.length*Math.random())]);
-		// random = this.files[Math.floor(this.files.length*Math.random())].listFile;
-		// this.suggestSecondLabel.set_text(random[Math.floor(random.length*Math.random())]);
-		// random = this.files[Math.floor(this.files.length*Math.random())].listFile;
-		// this.suggestThirdLabel.set_text(random[Math.floor(random.length*Math.random())]);
 		return randomText;
 	},
 	setSuggestionsRandom: function() {
@@ -1653,7 +1631,6 @@ const MycroftBarAnimation = new Lang.Class({
 	_init: function() {
 		this.animationBox = new St.BoxLayout({
 			name: 'animationBox',
-			style_class: 'animation-box',
 			x_expand: true,
 			x_align: Clutter.ActorAlign.CENTER,
 			y_align: Clutter.ActorAlign.START,
@@ -1675,6 +1652,7 @@ const MycroftBarAnimation = new Lang.Class({
 			this.actor.remove_actor(this._icon);
 			this.animationBox.remove_actor(this.actor);
 			this.actor.destroy();
+			this.actor = null;
 		}
 		this.colorizeEffect.set_tint(getColor(status));
 		this.actor = new St.Bin({
@@ -1687,7 +1665,7 @@ const MycroftBarAnimation = new Lang.Class({
 		});
 		this.actor.set_pivot_point(0.5, 0.5);
 		this.actor.set_scale(0.8, 0.8);
-		this.animationBox.add(this.actor);
+		this.animationBox.add_actor(this.actor);
 	},
 	startAnimation: function(uploader, status) {
 		this.initActor(status);
@@ -1731,7 +1709,7 @@ const MycroftBarAnimation = new Lang.Class({
 		Tweener.removeTweens(this.actor);
 		Tweener.addTween(this.actor, {
 			opacity: 255,
-			time: 0.75,
+			time: 2,
 			scale_x: 0.8,
 			scale_y: 0.8,
 			transition: 'easeInQuad',
@@ -1764,17 +1742,15 @@ const TopMenuBar = new Lang.Class({
 		});
 		this._menuBarCENTER = new St.BoxLayout({
 			name: 'menuBarCenter',
-
 		});
 
 		this._menuBarRIGHT = new St.BoxLayout({
 			name: 'menuBarRight',
-			style_class: 'menuBarRight',
 		});
 
 		this.settingsIcon = new St.Icon({
 			name: 'mycroftSettingsIcon',
-			icon_name: 'system-run-symbolic',
+			icon_name: 'applications-system-symbolic',
 		});
 		this.settingsActor = new St.Button({
 			name: 'mycroftSettingsButton',
@@ -1877,9 +1853,6 @@ const TopMenuBar = new Lang.Class({
 			this.setSearchActive();
 		}
 	},
-	listeningFunc: function(type) {
-		log(type);
-	},
 	updateStatusLabelText: function(status) {
 		if (status === 'failed') {
 			this.statusLabel.set_text('Mycroft Service Failed');
@@ -1906,8 +1879,13 @@ const TopMenuBar = new Lang.Class({
 				break;
 			case 'starting':
 			case 'stopping':
-			case 'install':
 				this.serviceIcon.icon_name = 'view-more-horizontal-symbolic';
+				break;
+			case 'install':
+				this.serviceIcon.icon_name = 'media-playback-stop-symbolic';
+				break;
+			case 'failed':
+				this.serviceIcon.icon_name = 'emblem-synchronizing-symbolic';
 				break;
 			default:
 				// do nothing
@@ -1972,12 +1950,12 @@ function getColor(status) {
 			b = 67;
 	} else if (status === 'install') {
 		r = 179,
-			g = 133,
-			b = 67;
+			g = 58,
+			b = 58;
 	} else if (status === 'failed') {
 		r = 179,
-			g = 133,
-			b = 67;
+			g = 58,
+			b = 58;
 	} else if (status === 'listening') {
 		r = 25,
 			g = 225,
@@ -2020,28 +1998,6 @@ function applyStyles() {
 				}
 			});
 		}
-		// TODO : Add themeing options
-		// let mycroftPopupBoxPointer = pane.box;
-
-		// if (mycroftPopupBoxPointer._original_inline_style_ === undefined) {
-		// 	mycroftPopupBoxPointer._original_inline_style_ = mycroftPopupBoxPointer.get_style();
-		// }
-		// // todo
-		// let boxStyle = '-arrow-background-color: #fff !important';
-
-		// // mycroftPopupBoxPointer.add_style_class_name('boxy');
-		// mycroftPopupBoxPointer.set_style(boxStyle + '; ' + (mycroftPopupBoxPointer._original_inline_style_ || ''));
-		// mycroftPopupBoxPointer._box_line_style = boxStyle;
-		// if (!mycroftPopupBoxPointer._boxAreaPaddingSIGNALID) {
-		// 	mycroftPopupBoxPointer._boxAreaPaddingSIGNALID = mycroftPopupBoxPointer.connect('style-changed', function() {
-		// 		let currboxStyle = mycroftPopupBoxPointer.get_style();
-		// 		if (currboxStyle && !currboxStyle.match(mycroftPopupBoxPointer._box_line_style)) {
-		// 			mycroftPopupBoxPointer._original_inline_style_ = currboxStyle;
-		// 			mycroftPopupBoxPointer.disconnect(mycroftPopupBoxPointer._boxAreaPaddingSIGNALID);
-		// 			delete mycroftPopupBoxPointer._boxAreaPaddingSIGNALID;
-		// 		}
-		// 	});
-		// }
 	}
 }
 
@@ -2071,16 +2027,6 @@ function findPanelClass(className) {
 	}
 	return pane;
 }
-
-// function printAllProperties(obj) {
-// 	log('printallproperties');
-// 	let propValue;
-// 	for (let propName in obj) {
-// 		propValue = obj[propName];
-
-// 		log(propName, propValue);
-// 	}
-// }
 
 function isEmpty(obj) {
 	for (let key in obj) {
@@ -2115,6 +2061,6 @@ function disable() {
 			socketClient = undefined;
 		}
 	} catch (e) {
-		log(e.toString());
+		log('Mycroft UI - Disable : ' + e.toString());
 	}
 }

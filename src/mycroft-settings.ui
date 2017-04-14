@@ -129,7 +129,6 @@
             <property name="can_focus">False</property>
             <items>
               <item id="0" translatable="yes">GIT</item>
-              <item id="1" translatable="yes">Debian Package</item>
               <item id="3" translatable="yes">Not Installed</item>
               <item id="2" translatable="yes">Other</item>
             </items>

@@ -26,9 +26,17 @@
       <default>true</default>
       <summary>Is Mycroft Installed</summary>
     </key>
-    <key type="s" name="mycroft-install-type">
-      <default>'3'</default>
+    <key type="i" name="mycroft-install-type">
+      <default>3</default>
       <summary>Mycroft Install Type</summary>
+    </key>
+    <key type="s" name="mycroft-ip-address">
+      <default>'0.0.0.0'</default>
+      <summary>Mycroft IP address</summary>
+    </key>
+    <key type="s" name="mycroft-port-number">
+      <default>'8181'</default>
+      <summary>Mycroft Port Number</summary>
     </key>
   </schema>
 </schemalist>

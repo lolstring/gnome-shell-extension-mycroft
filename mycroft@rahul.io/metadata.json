@@ -10,6 +10,7 @@
   "3.22",
   "3.24"
  ],
+ "url": "https://github.com/lolstring/gnome-shell-extension-mycroft",
  "uuid": "mycroft@rahul.io",
  "description": "This is an extension to the Mycroft AI Assistant for your gnome-shell. It allows you to control the Mycroft service, send and recieve messages and mute and unmute the microphone. It also gives you the ability to install Mycroft Core on your system"
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.20.0 -->
-<interface domain="gnome-shell-extension-openweather">
+<interface domain="gnome-shell-extension-mycroft">
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkFileChooserDialog" id="select-folder">
     <property name="can_focus">False</property>
@@ -124,13 +124,13 @@
           </packing>
         </child>
         <child>
-          <object class="GtkComboBoxText" id="combo-install-type">
+          <object class="GtkComboBoxText" id="install_type">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <items>
-              <item id="0" translatable="yes">GIT</item>
+              <item id="0" translatable="yes">GIT/Other</item>
               <item id="3" translatable="yes">Not Installed</item>
-              <item id="2" translatable="yes">Other</item>
+              <item id="4" translatable="yes">Remote</item>
             </items>
           </object>
           <packing>
@@ -150,6 +150,58 @@
           <packing>
             <property name="left_attach">1</property>
             <property name="top_attach">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label-ip-address">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">IP address (Default : 0.0.0.0)
+Please change only if required</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label-port-number">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Port Number (Default : 8181)
+Please change only if required.</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="ip_address">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="max_length">46</property>
+            <property name="caps_lock_warning">False</property>
+            <property name="secondary_icon_tooltip_text" translatable="yes">Default is 0.0.0.0</property>
+            <property name="placeholder_text" translatable="yes">0.0.0.0</property>
+            <property name="input_purpose">digits</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="port_number">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="max_length">5</property>
+            <property name="placeholder_text" translatable="yes">8181</property>
+            <property name="input_purpose">number</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">4</property>
           </packing>
         </child>
       </object>

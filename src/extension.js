@@ -28,6 +28,9 @@ const MYCROFT_SETTINGS_SCHEMA = 'org.gnome.shell.extensions.mycroft';
 const MYCROFT_POSITION_IN_PANEL_KEY = 'position-in-panel';
 const MYCROFT_CORE_LOCATION_KEY = 'mycroft-core-location';
 const MYCROFT_IS_INSTALL_KEY = 'mycroft-is-install';
+const MYCROFT_INSTALL_TYPE_KEY = 'mycroft-install-type';
+const MYCROFT_IP_ADDRESS_KEY = 'mycroft-ip-address';
+const MYCROFT_PORT_NUMBER_KEY = 'mycroft-port-number';
 
 // let _httpSession;
 let _timeoutId,
@@ -36,7 +39,8 @@ let _timeoutId,
 	_mixerControl,
 	core_location,
 	mycroft_is_install,
-	position_in_panel;
+	position_in_panel,
+	install_type;
 
 const MycroftPosition = {
 	CENTER: 0,
@@ -66,6 +70,7 @@ const MycroftServiceManager = new Lang.Class({
 		position_in_panel = this._position_in_panel;
 		core_location = this.core_location;
 		mycroft_is_install = this.mycroft_is_install;
+		install_type = this.install_type;
 		this.setEventListeners();
 		if (mycroft_is_install) {
 			this.emitServiceStatus('install');
@@ -85,9 +90,17 @@ const MycroftServiceManager = new Lang.Class({
 					this.emitServiceStatus('disabled');
 				} else if (status === 'install') {
 					// do nothing
+				} else if (status === 'remote') {
+					this.emitServiceStatus('starting');
+					_timeoutId = Mainloop.timeout_add(8000, Lang.bind(this, function() {
+						this.initWS();
+						_timeoutId = 0;
+					}));
 				}
 			}));
+			_timeoutId = 0;
 		}));
+
 	},
 	setEventListeners: function() {
 		this.serviceClicked = this.connect('mycroft-service-clicked', Lang.bind(this, function() {
@@ -100,10 +113,21 @@ const MycroftServiceManager = new Lang.Class({
 						this.startService();
 					} else if (status === 'install') {
 						// do nothing;
+					} else if (status === 'remote') {
+						if (!this.wsStarted) {
+							this.emitServiceStatus('starting');
+							_timeoutId = Mainloop.timeout_add(8000, Lang.bind(this, function() {
+								this.initWS();
+								_timeoutId = 0;
+							}));
+						} else {
+							this.emitServiceStatus('disabled');
+							this.closeSocket();
+						}
 					}
 				}));
 			} else {
-				//Locked
+				//locked
 			}
 		}));
 		this.sendMessageId = this.connect('send-message', Lang.bind(this, function(uploader, message) {
@@ -148,7 +172,7 @@ const MycroftServiceManager = new Lang.Class({
 	},
 	getServiceStatus: function(callback) {
 		let e, outStr;
-		if (mycroft_is_install) {
+		if (mycroft_is_install && install_type != 2) {
 			try {
 				// let [res, out] = GLib.spawn_command_line_sync(EXTENSIONDIR + '/shellscripts/serviceStatus.sh');
 				let [res, out] = GLib.spawn_command_line_sync('screen -ls');
@@ -170,9 +194,12 @@ const MycroftServiceManager = new Lang.Class({
 			} catch (err) {
 				log('Mycroft UI - Get Service Status' + err);
 			}
+		} else if (install_type == 2) {
+			callback('remote');
 		} else {
 			this.emitServiceStatus('install');
 			callback('install');
+
 		}
 	},
 	initWS: function() {
@@ -197,9 +224,8 @@ const MycroftServiceManager = new Lang.Class({
 			socketClient.httpsAliases = ['wss'];
 			let message = new Soup.Message({
 				method: 'GET',
-				uri: new Soup.URI('ws://0.0.0.0:8181/core'),
+				uri: new Soup.URI('ws://' + this.ip_address + ':' + this.port_number + '/core'),
 			});
-
 			try {
 				socketClient.websocket_connect_async(message, null, null, null, Lang.bind(this, function(session, result) {
 					try {
@@ -214,6 +240,9 @@ const MycroftServiceManager = new Lang.Class({
 							this.wsStarted = true;
 						}
 					} catch (e) {
+						if (this.install_type == 2) {
+							this.emitServiceStatus('remote-error');
+						}
 						this.emitServiceStatus('failed');
 					}
 				}));
@@ -230,6 +259,8 @@ const MycroftServiceManager = new Lang.Class({
 			this.emitServiceStatus('active'); // Active();
 		} else if (data.type === 'speak') {
 			this.emit('message-recieved', data.data.utterance, 'mycroft');
+		} else if (data.type === 'mycroft.not.paired') {
+			//
 		} else if (data.type === 'recognizer_loop:audio_output_start') {
 			this.emitAnimationStatus('audio_output_start');
 		} else if (data.type === 'recognizer_loop:audio_output_end') {
@@ -259,13 +290,14 @@ const MycroftServiceManager = new Lang.Class({
 		if (_timeoutId !== 0) {
 			Mainloop.source_remove(_timeoutId);
 		}
+
 		_timeoutId = Mainloop.timeout_add(6000, Lang.bind(this, function() {
-			self.getServiceStatus(Lang.bind(this, function(status) {
+			this.getServiceStatus(Lang.bind(this, function(status) {
 				if (status === 'active') {
 					_timeoutId = Mainloop.timeout_add(4000, Lang.bind(this, function() {
 						this.initWS();
 					}));
-				} else if (status === 'disabled') {
+				} else if (status === 'disabled' || status === 'remote') {
 					if (socketClient !== undefined) {
 						socketClient.abort();
 					}
@@ -307,6 +339,7 @@ const MycroftServiceManager = new Lang.Class({
 		}
 	},
 	emitServiceStatus: function(status, arg) {
+
 		if (status === 'starting' || status === 'stopping') {
 			this.locked = true;
 		} else {
@@ -343,6 +376,7 @@ const MycroftServiceManager = new Lang.Class({
 	loadConfig: function() {
 		this._settings = Convenience.getSettings(MYCROFT_SETTINGS_SCHEMA);
 		mycroft_is_install = this.mycroft_is_install;
+		install_type = this.mycroft_install_type;
 		if (this._settingsC) {
 			this._settings.disconnect(this._settingsC);
 		}
@@ -350,6 +384,7 @@ const MycroftServiceManager = new Lang.Class({
 			position_in_panel = this._position_in_panel;
 			core_location = this.core_location;
 			let mycroft_is_install_change = this.mycroft_is_install;
+			let install_type_change = this.install_type;
 			this.emit('settings-changed');
 			if (mycroft_is_install !== mycroft_is_install_change) {
 				mycroft_is_install = this.mycroft_is_install;
@@ -359,6 +394,15 @@ const MycroftServiceManager = new Lang.Class({
 					this.stopService();
 				}
 				this.emitServiceStatus('install');
+			}
+			if (install_type !== install_type_change) {
+				install_type = this.install_type;
+				if (install_type == 2) {
+					this.emitServiceStatus('disabled');
+					if (this.wsStarted) {
+						this.closeSocket();
+					}
+				}
 			}
 		}));
 	},
@@ -379,6 +423,24 @@ const MycroftServiceManager = new Lang.Class({
 			this.loadConfig();
 		}
 		return this._settings.get_string(MYCROFT_CORE_LOCATION_KEY);
+	},
+	get install_type() {
+		if (!this._settings) {
+			this.loadConfig();
+		}
+		return this._settings.get_int(MYCROFT_INSTALL_TYPE_KEY);
+	},
+	get ip_address() {
+		if (!this._settings) {
+			this.loadConfig();
+		}
+		return this._settings.get_string(MYCROFT_IP_ADDRESS_KEY);
+	},
+	get port_number() {
+		if (!this._settings) {
+			this.loadConfig();
+		}
+		return this._settings.get_string(MYCROFT_PORT_NUMBER_KEY);
 	},
 });
 const MycroftUI = new Lang.Class({
@@ -428,9 +490,11 @@ const MycroftUI = new Lang.Class({
 		}));
 	},
 	updateStatus: function(uploader, status) {
+		this.myUi.displayBox.searchBox.updateStatus(status);
+		status = status == 'remote-error' ? 'failed' : status;
 		this.mycroftPanel.updatePanelIcon(status);
 		this.myUi.topMenuBar.emit('mycroft-status', status);
-		this.myUi.displayBox.searchBox.updateStatus(status);
+
 	},
 	destroy: function() {
 		this.destroySignals();
@@ -742,7 +806,6 @@ const SearchBox = new Lang.Class({
 		}
 	},
 	updateStatus: function(status) {
-		this.updateStatusLabelStyle(status);
 		switch (status) {
 			case 'active':
 			case 'listening':
@@ -756,7 +819,6 @@ const SearchBox = new Lang.Class({
 				this.sBox.add_actor(this.label);
 				break;
 			case 'disabled':
-
 				this.sBox.remove_all_children();
 				this.label.set_text('Your Mycroft Assistant is currently disabled');
 				this.sBox.add_actor(this.label);
@@ -766,6 +828,12 @@ const SearchBox = new Lang.Class({
 				this.label.set_text('There was an error reaching your Mycroft Assistant. Click the reload button to try again');
 				this.sBox.add_actor(this.label);
 				break;
+			case 'remote-error':
+				this.sBox.remove_all_children();
+				this.label.set_text('Can\'t connect to remote Mycroft Assistant. Please check the ip address and port number');
+				this.sBox.add_actor(this.label);
+				status = 'failed';
+				break;
 			case 'install':
 				this.sBox.remove_all_children();
 				this.label.set_text('Please setup up this extension from the settings of the extension');
@@ -774,6 +842,7 @@ const SearchBox = new Lang.Class({
 			default:
 				// do nothing
 		}
+		this.updateStatusLabelStyle(status);
 	},
 	updateStatusLabelStyle: function(status) {
 		let style = this.label.get_style_class_name();
@@ -1846,12 +1915,14 @@ const TopMenuBar = new Lang.Class({
 		}));
 	},
 	updateStatus: function(uploader, status) {
-		this.updateStatusLabelText(status);
-		this.updateServiceIcon(status);
-		this.updateStatusLabelStyle(status);
 		if (status === 'active') {
 			this.setSearchActive();
 		}
+		status = status == 'remote-error' ? 'failed' : status;
+		this.updateStatusLabelText(status);
+		this.updateServiceIcon(status);
+		this.updateStatusLabelStyle(status);
+
 	},
 	updateStatusLabelText: function(status) {
 		if (status === 'failed') {

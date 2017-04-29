@@ -82,7 +82,7 @@ const MycroftServiceManager = new Lang.Class({
 					if (_timeoutId !== 0) {
 						Mainloop.source_remove(_timeoutId);
 					}
-					_timeoutId = Mainloop.timeout_add(8000, Lang.bind(this, function() {
+					_timeoutId = Mainloop.timeout_add(1000, Lang.bind(this, function() {
 						this.initWS();
 						_timeoutId = 0;
 					}));
@@ -92,7 +92,7 @@ const MycroftServiceManager = new Lang.Class({
 					// do nothing
 				} else if (status === 'remote') {
 					this.emitServiceStatus('starting');
-					_timeoutId = Mainloop.timeout_add(8000, Lang.bind(this, function() {
+					_timeoutId = Mainloop.timeout_add(6000, Lang.bind(this, function() {
 						this.initWS();
 						_timeoutId = 0;
 					}));
@@ -210,16 +210,16 @@ const MycroftServiceManager = new Lang.Class({
 		}
 		this.user_agent += ' ';
 		if (!this.wsStarted && mycroft_is_install) {
-			if (socketClient === undefined) {
-				socketClient = new Soup.Session();
-				socketClient.user_agent = this.user_agent;
-			} else {
-				// abort previous requests.
-				socketClient.abort();
-				socketClient = new Soup.Session();
-			}
-			let proxy = new Soup.ProxyResolverDefault();
-			Soup.Session.prototype.add_feature.call(socketClient, proxy);
+			// if (socketClient === undefined) {
+			// 	socketClient = new Soup.Session();
+			// 	socketClient.user_agent = this.user_agent;
+			// } else {
+			// 	// abort previous requests.
+			// 	socketClient.abort();
+			// 	socketClient = new Soup.Session();
+			// }
+			// let proxy = new Soup.ProxyResolverDefault();
+			// Soup.Session.prototype.add_feature.call(socketClient, proxy);
 
 			socketClient.httpsAliases = ['wss'];
 			let message = new Soup.Message({
@@ -2116,6 +2116,9 @@ function init() {
 
 
 function enable() {
+	socketClient = new Soup.Session();
+	let proxy = new Soup.ProxyResolverDefault();
+	Soup.Session.prototype.add_feature.call(socketClient, proxy);
 	if (miPanel) {
 		miPanel = null;
 	}

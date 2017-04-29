@@ -1,5 +1,5 @@
 {
- "version": 1,
+ "version": "9a03c0e",
  "name": "Mycroft AI Assistant",
  "settings-schema": "org.gnome.shell.extensions.mycroft",
  "shell-version": [

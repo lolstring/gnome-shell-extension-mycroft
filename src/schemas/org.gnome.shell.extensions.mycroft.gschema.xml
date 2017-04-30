@@ -38,5 +38,9 @@
       <default>'8181'</default>
       <summary>Mycroft Port Number</summary>
     </key>
+    <key type="b" name="animation-status">
+      <default>false</default>
+      <summary>Animation Status</summary>
+    </key>
   </schema>
 </schemalist>

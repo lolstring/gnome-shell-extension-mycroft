@@ -31,6 +31,7 @@ const MYCROFT_IS_INSTALL_KEY = 'mycroft-is-install';
 const MYCROFT_INSTALL_TYPE_KEY = 'mycroft-install-type';
 const MYCROFT_IP_ADDRESS_KEY = 'mycroft-ip-address';
 const MYCROFT_PORT_NUMBER_KEY = 'mycroft-port-number';
+const MYCROFT_ANIMATION_STATUS_KEY = 'animation-status';
 
 // let _httpSession;
 let _timeoutId,
@@ -40,7 +41,8 @@ let _timeoutId,
 	core_location,
 	mycroft_is_install,
 	position_in_panel,
-	install_type;
+	install_type,
+	animation_status;
 
 const MycroftPosition = {
 	CENTER: 0,
@@ -71,6 +73,7 @@ const MycroftServiceManager = new Lang.Class({
 		core_location = this.core_location;
 		mycroft_is_install = this.mycroft_is_install;
 		install_type = this.install_type;
+		animation_status = this.animation_status;
 		this.setEventListeners();
 		if (mycroft_is_install) {
 			this.emitServiceStatus('install');
@@ -82,7 +85,7 @@ const MycroftServiceManager = new Lang.Class({
 					if (_timeoutId !== 0) {
 						Mainloop.source_remove(_timeoutId);
 					}
-					_timeoutId = Mainloop.timeout_add(8000, Lang.bind(this, function() {
+					_timeoutId = Mainloop.timeout_add(1000, Lang.bind(this, function() {
 						this.initWS();
 						_timeoutId = 0;
 					}));
@@ -92,7 +95,7 @@ const MycroftServiceManager = new Lang.Class({
 					// do nothing
 				} else if (status === 'remote') {
 					this.emitServiceStatus('starting');
-					_timeoutId = Mainloop.timeout_add(8000, Lang.bind(this, function() {
+					_timeoutId = Mainloop.timeout_add(6000, Lang.bind(this, function() {
 						this.initWS();
 						_timeoutId = 0;
 					}));
@@ -210,16 +213,16 @@ const MycroftServiceManager = new Lang.Class({
 		}
 		this.user_agent += ' ';
 		if (!this.wsStarted && mycroft_is_install) {
-			if (socketClient === undefined) {
-				socketClient = new Soup.Session();
-				socketClient.user_agent = this.user_agent;
-			} else {
-				// abort previous requests.
-				socketClient.abort();
-				socketClient = new Soup.Session();
-			}
-			let proxy = new Soup.ProxyResolverDefault();
-			Soup.Session.prototype.add_feature.call(socketClient, proxy);
+			// if (socketClient === undefined) {
+			// 	socketClient = new Soup.Session();
+			// 	socketClient.user_agent = this.user_agent;
+			// } else {
+			// 	// abort previous requests.
+			// 	socketClient.abort();
+			// 	socketClient = new Soup.Session();
+			// }
+			// let proxy = new Soup.ProxyResolverDefault();
+			// Soup.Session.prototype.add_feature.call(socketClient, proxy);
 
 			socketClient.httpsAliases = ['wss'];
 			let message = new Soup.Message({
@@ -383,6 +386,7 @@ const MycroftServiceManager = new Lang.Class({
 		this._settingsC = this._settings.connect('changed', Lang.bind(this, function() {
 			position_in_panel = this._position_in_panel;
 			core_location = this.core_location;
+			animation_status = this.animation_status;
 			let mycroft_is_install_change = this.mycroft_is_install;
 			let install_type_change = this.install_type;
 			this.emit('settings-changed');
@@ -429,6 +433,12 @@ const MycroftServiceManager = new Lang.Class({
 			this.loadConfig();
 		}
 		return this._settings.get_int(MYCROFT_INSTALL_TYPE_KEY);
+	},
+	get animation_status() {
+		if (!this._settings) {
+			this.loadConfig();
+		}
+		return this._settings.get_boolean(MYCROFT_ANIMATION_STATUS_KEY);
 	},
 	get ip_address() {
 		if (!this._settings) {
@@ -1738,16 +1748,18 @@ const MycroftBarAnimation = new Lang.Class({
 	},
 	startAnimation: function(uploader, status) {
 		this.initActor(status);
-		Tweener.addTween(this.actor, {
-			opacity: 255,
-			time: 0.5,
-			scale_x: 1.0,
-			scale_y: 1.0,
-			transition: 'easeOutQuad',
-			onComplete: Lang.bind(this, function() {
-				this.loopTween2();
-			}),
-		});
+		if (animation_status) {
+			Tweener.addTween(this.actor, {
+				opacity: 255,
+				time: 0.5,
+				scale_x: 1.0,
+				scale_y: 1.0,
+				transition: 'easeOutQuad',
+				onComplete: Lang.bind(this, function() {
+					this.loopTween2();
+				}),
+			});
+		}
 	},
 	loopTween: function() {
 		Tweener.addTween(this.actor, {
@@ -1775,14 +1787,16 @@ const MycroftBarAnimation = new Lang.Class({
 		});
 	},
 	stopAnimation: function(uploader, status) {
-		Tweener.removeTweens(this.actor);
-		Tweener.addTween(this.actor, {
-			opacity: 255,
-			time: 2,
-			scale_x: 0.8,
-			scale_y: 0.8,
-			transition: 'easeInQuad',
-		});
+		if (animation_status) {
+			Tweener.removeTweens(this.actor);
+			Tweener.addTween(this.actor, {
+				opacity: 255,
+				time: 2,
+				scale_x: 0.8,
+				scale_y: 0.8,
+				transition: 'easeInQuad',
+			});
+		}
 		this.initActor(status);
 	},
 	destroy: function() {
@@ -2116,6 +2130,9 @@ function init() {
 
 
 function enable() {
+	socketClient = new Soup.Session();
+	let proxy = new Soup.ProxyResolverDefault();
+	Soup.Session.prototype.add_feature.call(socketClient, proxy);
 	if (miPanel) {
 		miPanel = null;
 	}

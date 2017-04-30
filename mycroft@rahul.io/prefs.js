@@ -17,7 +17,7 @@ const EXTENSIONDIR = Me.dir.get_path();
 
 const MYCROFT_SETTINGS_SCHEMA = 'org.gnome.shell.extensions.mycroft';
 const MYCROFT_POSITION_IN_PANEL_KEY = 'position-in-panel';
-
+const MYCROFT_ANIMATION_STATUS_KEY = 'animation-status';
 const MYCROFT_CORE_LOCATION_KEY = 'mycroft-core-location';
 const MYCROFT_IS_INSTALL_KEY = 'mycroft-is-install';
 const MYCROFT_INSTALL_TYPE_KEY = 'mycroft-install-type';
@@ -72,7 +72,7 @@ const MycroftPrefsWidget = new GObject.Class({
         for (let i in theObjects) {
             let name = theObjects[i].get_name ? theObjects[i].get_name() : 'dummy';
             log(name);
-            if(this[name] !== undefined){
+            if (this[name] !== undefined) {
                 log(this[name]);
                 if (theObjects[i].class_path()[1].indexOf('GtkEntry') != -1) {
                     this.initEntry(theObjects[i]);
@@ -80,6 +80,8 @@ const MycroftPrefsWidget = new GObject.Class({
                     this.initComboBox(theObjects[i]);
                 } else if (theObjects[i].class_path()[1].indexOf('GtkFileChooser') != -1) {
                     this.initFileChooser(theObjects[i]);
+                } else if (theObjects[i].class_path()[1].indexOf('GtkSwitch') != -1) {
+                    this.initSwitch(theObjects[i]);
                 }
                 this.configWidgets.push([theObjects[i], name]);
             }
@@ -167,21 +169,21 @@ const MycroftPrefsWidget = new GObject.Class({
                 this.entryIpAddress.show();
                 this.entryPortNumber.show();
                 break;
-            // case 1:
-            //     if (fl) {
-            //         this.mycroft_install_location = '/etc/mycroft';
-            //     }
-            //     this.mycroft_is_install = true;
-            //     this.labelInstall.hide();
-            //     this.buttonInstall.hide();
-            //     this.buttonFileChooser.hide();
-            //     this.labelLocation.hide();
-            //     //port
-            //     this.labelPortNumber.show();
-            //     this.labelIpAddress.show();
-            //     this.entryIpAddress.show();
-            //     this.entryPortNumber.show();
-            //     break;
+                // case 1:
+                //     if (fl) {
+                //         this.mycroft_install_location = '/etc/mycroft';
+                //     }
+                //     this.mycroft_is_install = true;
+                //     this.labelInstall.hide();
+                //     this.buttonInstall.hide();
+                //     this.buttonFileChooser.hide();
+                //     this.labelLocation.hide();
+                //     //port
+                //     this.labelPortNumber.show();
+                //     this.labelIpAddress.show();
+                //     this.entryIpAddress.show();
+                //     this.entryPortNumber.show();
+                //     break;
             case 1:
                 this.mycroft_is_install = false;
                 this.labelInstall.show();
@@ -233,7 +235,12 @@ const MycroftPrefsWidget = new GObject.Class({
             this[name] = arguments[0].active;
         }));
     },
-
+    initSwitch: function(theSwitch) {
+        let name = theSwitch.get_name();
+        theSwitch.connect("notify::active", Lang.bind(this, function() {
+            this[name] = arguments[0].active;
+        }));
+    },
     refreshUI: function() {
         let config = this.configWidgets;
         for (let i in config) {
@@ -257,6 +264,18 @@ const MycroftPrefsWidget = new GObject.Class({
             this.loadConfig();
         }
         this.Settings.set_enum(MYCROFT_POSITION_IN_PANEL_KEY, v);
+    },
+    get animation_status() {
+        if (!this.Settings) {
+            this.loadConfig();
+        }
+        return this.Settings.get_boolean(MYCROFT_ANIMATION_STATUS_KEY);
+    },
+    set animation_status(v) {
+        if (!this.Settings) {
+            this.loadConfig();
+        }
+        this.Settings.set_boolean(MYCROFT_ANIMATION_STATUS_KEY, v);
     },
     get core_location() {
         if (!this.Settings) {
@@ -294,7 +313,7 @@ const MycroftPrefsWidget = new GObject.Class({
         }
         return this.Settings.set_boolean(MYCROFT_IS_INSTALL_KEY, v);
     },
-    get ip_address(){
+    get ip_address() {
         if (!this.Settings) {
             this.loadConfig();
         }
@@ -306,7 +325,7 @@ const MycroftPrefsWidget = new GObject.Class({
         }
         return this.Settings.set_string(MYCROFT_IP_ADDRESS_KEY, v);
     },
-    get port_number(){
+    get port_number() {
         if (!this.Settings) {
             this.loadConfig();
         }

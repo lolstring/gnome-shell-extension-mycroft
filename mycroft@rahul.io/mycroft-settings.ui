@@ -139,20 +139,6 @@
           </packing>
         </child>
         <child>
-          <object class="GtkFileChooserButton" id="button-file-chooser">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="action">select-folder</property>
-            <property name="show_hidden">True</property>
-            <property name="dialog">select-folder</property>
-            <property name="title" translatable="yes">Select Mycroft Core Folder</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">1</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkLabel" id="label-ip-address">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -204,6 +190,20 @@ Please change only if required.</property>
             <property name="top_attach">4</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkFileChooserButton" id="button-file-chooser">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="action">select-folder</property>
+            <property name="show_hidden">True</property>
+            <property name="dialog">select-folder</property>
+            <property name="title" translatable="yes">Select Mycroft Core Folder</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
       </object>
     </child>
     <child type="tab">
@@ -250,6 +250,27 @@ Please change only if required.</property>
           <packing>
             <property name="left_attach">1</property>
             <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label-animation">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Animation ( Default : Off ) </property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSwitch" id="animation_status">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">1</property>
           </packing>
         </child>
       </object>

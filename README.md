@@ -16,7 +16,7 @@ This is a gnome-shell-extension for [Mycroft](https://mycroft.ai) AI Assistant.
 - Helps new users Install Mycroft-Core from the Mycroft Git repository.
 - Allows you to set Mycroft Core location.
 - Automatically restart on gnome-shell exit.
-
+- Support for remote installation.
 ---
 
 ## Please see the Wiki for:

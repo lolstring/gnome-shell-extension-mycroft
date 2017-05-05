@@ -23,7 +23,7 @@ This is a gnome-shell-extension for [Mycroft](https://mycroft.ai) AI Assistant.
 
  * [Installation](https://github.com/lolstring/gnome-shell-extension-mycroft/wiki/Installation)
  * [Settings](https://github.com/lolstring/gnome-shell-extension-mycroft/wiki/Settings)
- * [Known Player Bugs](https://github.com/lolstring/gnome-shell-extension-mycroft/wiki/Known-Player-Bugs)
+ * [Known Bugs](https://github.com/lolstring/gnome-shell-extension-mycroft/wiki/Known-Player-Bugs)
 
 ## Liscence 
 

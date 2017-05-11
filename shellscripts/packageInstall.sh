@@ -108,7 +108,7 @@ if echo "$answer" | grep -iq "^y"; then
 				fi
 			fi
 		done
-	if [$abc]; then 
+	if [ $abc ]; then 
 		echo 'If an error occurred please visit https://github.com/MycroftAi/Mycroft-core/ or else '
 		echo 'Mycroft Core Install Completed. Please set this  ---> '$dest' <--- path to Mycroft-core destination in the settings :)'
 		notify-send 'Mycroft Core Install Completed. Please set this  ---> '$dest' <--- path to Mycroft-core destination in the settings'

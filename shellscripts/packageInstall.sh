@@ -12,7 +12,7 @@ if echo "$answer" | grep -iq "^y"; then
 	echo 'Please specify the destination you want to install Mycroft-core (default is '$HOME'/Mycroft-core, leave blank for default):';
 		read location
 	location_NO_EXTERNAL_SPACE="$(echo -e "${location}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-	if [$location_NO_EXTERNAL_SPACE -eq '']; then
+	if [ $location_NO_EXTERNAL_SPACE -eq '' ]; then
 		dest=$HOME'/Mycroft-core'
 	else
 		dest=$location_NO_EXTERNAL_SPACE
@@ -36,7 +36,7 @@ if echo "$answer" | grep -iq "^y"; then
 							git checkout master
 							./build_host_setup_debian.sh
 							./dev_setup.sh
-							$abc = true	
+							abc=true	
 						else
 							echo 'Please install git and run install again or visit https://mycroft.ai for alternate methods'
 				
@@ -79,7 +79,7 @@ if echo "$answer" | grep -iq "^y"; then
 						abc=true;
 					fi
 				elif [[ ${osInfo[$f]} == "pacman" ]]; then
-					if [$GIT_IS_AVAILABLE -eq 1]; then
+					if [ $GIT_IS_AVAILABLE -eq 1 ]; then
 						echo 'Git is not installed do you want to install git ?(y/n)';
 						read answer
 						if echo "$answer" | grep -iq "^y"; then

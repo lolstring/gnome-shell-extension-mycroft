@@ -133,7 +133,7 @@ $browser-context: 11;
         color: white;
         border-radius: em(2);
         border-color: rgba(225, 255, 255, 0.1);
-        background-color: rgba(200, 200, 200, 0.1);
+        background-color: rgba(30, 30, 30, 0.3);
         border-width: em(1);
         padding: em(2) em(4);
         margin: em(4) em(0);
@@ -162,8 +162,6 @@ $browser-context: 11;
         padding: em(2) em(4);
         border-radius: em(2);
         border-color: #747467;
-        color: #eeeeec;
-        background-color: #2e3436;
         &:focus {
             //padding: 6px 8px;
             border-width: em(1);
@@ -174,7 +172,7 @@ $browser-context: 11;
     .utterance-mic-icon {
         icon-size: 1.2em;
         padding: 0 0;
-        color: rgba(238, 238, 236, 0.7);
+        color: rgba(128, 128, 128, 0.9);
     }
     .utterance-entry:hover .utterance-entry-icon,
     .utterance-entry:focus .utterance-entry-icon {
@@ -189,25 +187,26 @@ $browser-context: 11;
         //background-color:#fff00f;
     }
     .suggestions-label {
+        color: white;
         border-color: #ffffff;
         border-radius: em(2);
         padding: em(2) em(4);
         margin: em(2) em(2);
-        background-color: #2e3436;
+        background-color: rgba(30, 30, 30, 0.7);
         max-width: 7em;
         word-wrap: ellipsis;
     }
     .suggestions-label:focus,
     .suggestions-label:hover,
     .suggestion-label:active {
-        background-color: #0c1214;
+        background-color: rgba(30, 30, 30, 0.8);
         word-wrap: none;
     }
     .suggestions-focus-label-active {
         //background-color:#0c1214;
         border-color: #ffffff;
         border-radius: em(2);
-        background-color: #2e3436;
+        background-color: rgba(30, 30, 30, 0.7);
         padding: em(2) em(4);
         max-width: 24em;
     }
@@ -219,3 +218,4 @@ $browser-context: 11;
         //min-width:2em;
     }
 }
+

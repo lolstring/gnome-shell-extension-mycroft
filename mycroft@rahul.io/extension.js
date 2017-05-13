@@ -231,23 +231,24 @@ const MycroftServiceManager = new Lang.Class({
 			});
 			try {
 				socketClient.websocket_connect_async(message, null, null, null, Lang.bind(this, function(session, result) {
-					try {
-						this.connection = session.websocket_connect_finish(result);
-						if (this.connection !== null) {
-							this.connection.connect('message', Lang.bind(this, this.onMessage));
+						try {
 
-							this.connection.connect('closed', Lang.bind(this, function(connection) {
-								this.onClosed(connection);
-							}));
+							this.connection = session.websocket_connect_finish(result);
+							if (this.connection !== null) {
+								this.connection.connect('message', Lang.bind(this, this.onMessage));
 
-							this.wsStarted = true;
+								this.connection.connect('closed', Lang.bind(this, function(connection) {
+									this.onClosed(connection);
+								}));
+
+								this.wsStarted = true;
+							}
+						} catch (e) {
+							if (this.install_type == 2) {
+								this.emitServiceStatus('remote-error');
+							}
+							this.emitServiceStatus('failed');
 						}
-					} catch (e) {
-						if (this.install_type == 2) {
-							this.emitServiceStatus('remote-error');
-						}
-						this.emitServiceStatus('failed');
-					}
 				}));
 			} catch (e) {
 				log('Mycroft UI - Init Websocket' + e);
@@ -2016,11 +2017,11 @@ const TopMenuBar = new Lang.Class({
 });
 
 function getColor(status) {
-	let r, g, b, a = 1;
+	let r, g, b;
 	if (status === 'active') {
-		r = 34,
-			g = 142,
-			b = 34;
+		r = 10,
+			g = 224,
+			b = 10;
 	} else if (status === 'starting') {
 		r = 159,
 			g = 73,
@@ -2030,21 +2031,21 @@ function getColor(status) {
 			g = 73,
 			b = 159;
 	} else if (status === 'disabled') {
-		r = 208,
-			g = 133,
-			b = 67;
+		r = 255,
+			g = 135,
+			b = 0;
 	} else if (status === 'install') {
-		r = 179,
-			g = 58,
-			b = 58;
+		r = 255,
+			g = 29,
+			b = 29;
 	} else if (status === 'failed') {
 		r = 179,
 			g = 58,
 			b = 58;
 	} else if (status === 'listening') {
-		r = 25,
-			g = 225,
-			b = 25;
+		r = 35,
+			g = 209,
+			b = 35;
 	} else {
 		r = 225,
 			g = 225,

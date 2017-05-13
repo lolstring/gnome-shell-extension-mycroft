@@ -74,14 +74,14 @@ $browser-context: 11;
         color: #000000;
     }
     .disabled {
-        color: #d08543;
+        color: #FF8700;
     }
     .active {
-        color: #228e22;
+        color: #0AE00A;
     }
     .failed,
     .install {
-        color: #B33A3A;
+        color: #FF1D1D;
     }
     .starting {
         color: #9f49f9;
@@ -90,7 +90,7 @@ $browser-context: 11;
         color: #f9499f;
     }
     .listening {
-        color: #25df25;
+        color: #23D123;
     }
     .chat-box {
         height: em(150);
@@ -103,13 +103,13 @@ $browser-context: 11;
     .hint-header {
         margin: 0.75em, 1em;
         font-weight: bold;
-        color: rgba(175, 175, 175, 1);
+        //color: rgba(175, 175, 175, 1);
         font-size: 0.909em;
     }
     .hint-text {
         margin: 0.25em, 0em, 0.25em 0em;
         //font-weight:normal;
-        color: rgba(225, 225, 225, 1);
+        //color: rgba(225, 225, 225, 1);
         font-size: 0.909em;
     }
     .hint-text-bold {
@@ -209,11 +209,13 @@ $browser-context: 11;
         background-color: rgba(30, 30, 30, 0.7);
         padding: em(2) em(4);
         max-width: 24em;
+        color:white;
     }
     .suggestions-focus-label {
         padding: em(2) em(4) !important;
         border-color: #ffffff;
         border-radius: em(2);
+        //color: white;
         //min-height:2em;
         //min-width:2em;
     }

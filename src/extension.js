@@ -144,7 +144,7 @@ const MycroftServiceManager = new Lang.Class({
 		this.getServiceStatus(Lang.bind(this, function(status) {
 			if (status === 'disabled' || status === 'failed') {
 				try {
-					GLib.spawn_command_line_async(core_location + '/mycroft.sh start');
+					GLib.spawn_command_line_async(core_location + '/start-mycroft.sh all');
 					this.emitServiceStatus('starting');
 					_timeoutId = Mainloop.timeout_add(5000, Lang.bind(this, function() {
 						this.getServiceStatus(Lang.bind(this, function(status) {
@@ -165,7 +165,7 @@ const MycroftServiceManager = new Lang.Class({
 	stopService: function(callback) {
 		this.emitServiceStatus('stopping');
 		try {
-			GLib.spawn_command_line_async(core_location + '/mycroft.sh stop');
+			GLib.spawn_command_line_async(core_location + '/stop-mycroft.sh');
 			this.closeSocket();
 			this.wsStarted = false;
 		} catch (e) {

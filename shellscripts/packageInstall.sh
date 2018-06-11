@@ -12,7 +12,7 @@ if echo "$answer" | grep -iq "^y"; then
 	echo 'Please specify the destination you want to install Mycroft-core (default is '$HOME'/Mycroft-core, leave blank for default):';
 		read location
 	location_NO_EXTERNAL_SPACE="$(echo -e "${location}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-	if [ $location_NO_EXTERNAL_SPACE -eq '' ]; then
+	if [ -z "$location_NO_EXTERNAL_SPACE" ]; then
 		dest=$HOME'/Mycroft-core'
 	else
 		dest=$location_NO_EXTERNAL_SPACE

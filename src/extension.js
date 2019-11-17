@@ -68,6 +68,7 @@ const MycroftServiceManager = new Lang.Class({
   _init: function () {
     this.wsStarted = false;
     this.loadConfig();
+    const msm = this;
     position_in_panel = this._position_in_panel;
     core_location = this.core_location;
     mycroft_is_install = this.mycroft_is_install;
@@ -77,31 +78,31 @@ const MycroftServiceManager = new Lang.Class({
     if (mycroft_is_install) {
       this.emitServiceStatus('install');
     }
-    // _timeoutId = Mainloop.timeout_add(2000, Lang.bind(this, function() {
-    // 	this.getServiceStatus(Lang.bind(this, function(status) {
-    // 		if (status === 'active') {
-    // 			this.emitServiceStatus('starting');
-    // 			if (_timeoutId !== 0) {
-    // 				Mainloop.source_remove(_timeoutId);
-    // 			}
-    // 			_timeoutId = Mainloop.timeout_add(1000, Lang.bind(this, function() {
-    // 				this.initWS();
-    // 				_timeoutId = 0;
-    // 			}));
-    // 		} else if (status === 'disabled' || status === 'failed') {
-    // 			this.emitServiceStatus('disabled');
-    // 		} else if (status === 'install') {
-    // 			// do nothing
-    // 		} else if (status === 'remote') {
-    // 			this.emitServiceStatus('starting');
-    // 			_timeoutId = Mainloop.timeout_add(6000, Lang.bind(this, function() {
-    // 				this.initWS();
-    // 				_timeoutId = 0;
-    // 			}));
-    // 		}
-    // 	}));
-    // 	_timeoutId = 0;
-    // }));
+    _timeoutId = Mainloop.timeout_add(2000, Lang.bind(this, function () {
+      this.getServiceStatus(Lang.bind(this, function (status) {
+        if (status === 'active') {
+          this.emitServiceStatus('starting');
+          if (_timeoutId !== 0) {
+            Mainloop.source_remove(_timeoutId);
+          }
+          _timeoutId = Mainloop.timeout_add(1000, Lang.bind(this, function () {
+            msm.initWS();
+            _timeoutId = 0;
+          }));
+        } else if (status === 'disabled' || status === 'failed') {
+          this.emitServiceStatus('disabled');
+        } else if (status === 'install') {
+        // do nothing
+        } else if (status === 'remote') {
+          this.emitServiceStatus('starting');
+          _timeoutId = Mainloop.timeout_add(6000, Lang.bind(this, function () {
+            msm.initWS();
+            _timeoutId = 0;
+          }));
+        }
+      }));
+      _timeoutId = 0;
+    }));
   },
   setEventListeners: function () {
     this.serviceClicked = this.connect(
@@ -241,12 +242,12 @@ const MycroftServiceManager = new Lang.Class({
     this.user_agent += ' ';
     if (!this.wsStarted && mycroft_is_install) {
       // if (socketClient === undefined) {
-      // 	socketClient = new Soup.Session();
-      // 	socketClient.user_agent = this.user_agent;
+      //  socketClient = new Soup.Session();
+      //  socketClient.user_agent = this.user_agent;
       // } else {
-      // 	// abort previous requests.
-      // 	socketClient.abort();
-      // 	socketClient = new Soup.Session();
+      //  // abort previous requests.
+      //  socketClient.abort();
+      //  socketClient = new Soup.Session();
       // }
       // let proxy = new Soup.ProxyResolverDefault();
       // Soup.Session.prototype.add_feature.call(socketClient, proxy);

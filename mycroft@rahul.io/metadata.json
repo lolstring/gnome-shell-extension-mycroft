@@ -1,8 +1,8 @@
 {
- "version": "9609870",
+ "version": "9d79769",
  "name": "Mycroft AI Assistant",
  "settings-schema": "org.gnome.shell.extensions.mycroft",
- "shell-version": ["3.14", "3.16", "3.18", "3.20", "3.22", "3.24"],
+ "shell-version": ["3.14", "3.16", "3.18", "3.20", "3.22", "3.24", "3.26", "3.28"],
  "url": "https://github.com/lolstring/gnome-shell-extension-mycroft",
  "uuid": "mycroft@rahul.io",
  "description": "This is an extension to the Mycroft AI Assistant for your gnome-shell. It allows you to control the Mycroft service, send and recieve messages and mute and unmute the microphone. It also gives you the ability to install Mycroft Core on your system"

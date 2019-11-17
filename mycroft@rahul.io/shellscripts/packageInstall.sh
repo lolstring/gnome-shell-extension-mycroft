@@ -12,7 +12,7 @@ if echo "$answer" | grep -iq "^y"; then
 	echo 'Please specify the destination you want to install Mycroft-core (default is '$HOME'/Mycroft-core, leave blank for default):';
 		read location
 	location_NO_EXTERNAL_SPACE="$(echo -e "${location}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-	if [ $location_NO_EXTERNAL_SPACE -eq '' ]; then
+	if [ -z "$location_NO_EXTERNAL_SPACE" ]; then
 		dest=$HOME'/Mycroft-core'
 	else
 		dest=$location_NO_EXTERNAL_SPACE
@@ -34,7 +34,6 @@ if echo "$answer" | grep -iq "^y"; then
 							echo 'Git Cloned to '$dest 
 							cd $dest
 							git checkout master
-							./build_host_setup_debian.sh
 							./dev_setup.sh
 							abc=true	
 						else
@@ -47,7 +46,6 @@ if echo "$answer" | grep -iq "^y"; then
 						git clone git://github.com/MycroftAi/mycroft-core/ $dest
 						cd $dest
 						git checkout master
-						./build_host_setup_debian.sh
 						./dev_setup.sh
 						abc=true
 					fi
@@ -61,7 +59,6 @@ if echo "$answer" | grep -iq "^y"; then
 							echo 'Git Cloned to '$dest
 							cd $dest
 							git checkout master
-							./build_host_setup_fedora.sh
 							./dev_setup.sh
 							abc=true
 						else
@@ -74,7 +71,6 @@ if echo "$answer" | grep -iq "^y"; then
 						cd $dest
 						git checkout master
 						echo 'Git Cloned to '$dest
-						./build_host_setup_fedora.sh
 						./dev_setup.sh
 						abc=true;
 					fi
@@ -88,7 +84,6 @@ if echo "$answer" | grep -iq "^y"; then
 							echo 'Git Cloned to '$dest 
 							cd $dest
 							git checkout master
-							./build_host_setup_arch.sh
 							./dev_setup.sh
 							abc=true
 						else
@@ -101,7 +96,6 @@ if echo "$answer" | grep -iq "^y"; then
 						cd $dest
 						echo 'Git Cloned to '$dest
 						git checkout master
-						./build_host_setup_arch.sh
 						./dev_setup.sh
 						abc=true;
 					fi

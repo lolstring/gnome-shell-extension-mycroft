@@ -1,8 +1,7 @@
-
 /* eslint-env node */
 /* eslint-disable no-sync */
 var gulp = require('gulp');
-var sass = sass = require('gulp-ruby-sass');
+var sass = require('gulp-sass');
 
 
 var del = require('del');
@@ -63,7 +62,9 @@ gulp.task('lint', function () {
   var thresholdWarnings = 1;
   var thresholdErrors = 1;
   return gulp.src([ '**/*.js' ])
-    .pipe(eslint({quiet:true}))
+    .pipe(eslint({
+      quiet: true,
+    }))
     .pipe(eslint.format())
     .pipe(threshold.afterErrors(thresholdErrors, function (numberOfErrors) {
       throw new Error('ESLint errors (' + numberOfErrors + ') equal to or greater than the threshold (' + thresholdErrors + ')');
@@ -76,14 +77,15 @@ gulp.task('lint', function () {
 gulp.task('sass', function () {
   return gulp.src('sass/*.scss')
     .pipe(sass({
-      style: 'expanded',
-      onError: console.error.bind(console, 'Sasserror'),
+      errLogToConsole: true,
+      outputStyle: 'expanded',
+      precision: 10,
     }))
     .pipe(gulp.dest('build'));
 });
 
 gulp.task('clean', function (cb) {
-  return del([ 'build/',metadata.uuid], cb);
+  return del([ 'build/', metadata.uuid ], cb);
 });
 
 gulp.task('copy', function () {
@@ -92,11 +94,11 @@ gulp.task('copy', function () {
 });
 gulp.task('copy-icons', function () {
   return gulp.src('icons/*')
-  .pipe(gulp.dest('build/icons'));
+    .pipe(gulp.dest('build/icons'));
 });
 gulp.task('copy-suggestions', function () {
   return gulp.src('suggestions/*')
-  .pipe(gulp.dest('build/suggestions'));
+    .pipe(gulp.dest('build/suggestions'));
 });
 gulp.task('copy-scripts', function () {
   return gulp.src('shellscripts/*.sh')
@@ -107,7 +109,7 @@ gulp.task('copy-license', function () {
   return gulp.src([ 'LICENSE' ])
     .pipe(gulp.dest('build'));
 });
-gulp.task('copy-release',function(){
+gulp.task('copy-release', function () {
   return gulp.src('build/**/*').pipe(gulp.dest(metadata.uuid));
 });
 gulp.task('metadata', function () {
@@ -115,7 +117,9 @@ gulp.task('metadata', function () {
     .pipe(jsonEditor(function (json) {
       json.version = getVersion();
       return json;
-    }, { end_with_newline: true }))
+    }, {
+      end_with_newline: true,
+    }))
     .pipe(gulp.dest('build'));
 });
 
@@ -156,7 +160,9 @@ gulp.task('reset-prefs', shell.task([
 ]));
 
 gulp.task('uninstall', function (cb) {
-  return del([ paths.install ], { force: true }, cb);
+  return del([ paths.install ], {
+    force: true,
+  }, cb);
 });
 
 gulp.task('install-link', [ 'uninstall', 'build' ], function () {
@@ -184,7 +190,9 @@ gulp.task('bump', function (cb) {
       json.version++;
       v = 'v' + json.version;
       return json;
-    }, { end_with_newline: true }))
+    }, {
+      end_with_newline: true,
+    }))
     .pipe(gulp.dest('src'));
   stream.on('error', cb);
   stream.on('end', function () {
@@ -201,7 +209,7 @@ gulp.task('push', function (cb) {
 });
 
 gulp.task('dist', function (cb) {
-  runSequence('build','copy-release', ['lint'], function () {
+  runSequence('build', 'copy-release', [ 'lint' ], function () {
     var zipFile = metadata.uuid + '.zip';
     var stream = gulp.src([ 'build/**/*' ])
       .pipe(zip(zipFile))
@@ -227,6 +235,10 @@ gulp.task('enable-debug', shell.task([
 
 gulp.task('disable-debug', shell.task([
   'dconf write /org/gnome/shell/extensions/mycroft/debug false',
+]));
+
+gulp.task('log', shell.task([
+  'journalctl /usr/bin/gnome-shell -f -o cat',
 ]));
 
 gulp.task('test', function (cb) {
@@ -265,7 +277,8 @@ gulp.task('default', function () {
     '\n' +
     'DEBUG\n' +
     '  enable-debug          Enables debug mode\n' +
-    '  disable-debug         Disables debug mode\n'
+    '  disable-debug         Disables debug mode\n' +
+    '  log                   Show journalctl logs \n'
   );
   /* eslint-esnable no-console, max-len */
 });
